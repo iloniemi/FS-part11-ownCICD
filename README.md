@@ -1,2 +1,2 @@
 Sovellus löytyy:
-https://ancient-meadow-9146.fly.dev/
+https://puhelinluettelo-holy-wildflower-4543.fly.dev/
