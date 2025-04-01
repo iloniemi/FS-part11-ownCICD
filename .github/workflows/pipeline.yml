@@ -41,7 +41,7 @@ jobs:
         uses: stegzilla/discord-notify@v2
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
-          title: New version of Pokedex deployed
+          title: New version of Phonebook deployed
           message: |
             **url:** https://puhelinluettelo-holy-wildflower-4543.fly.dev
       - name: deployment failure discord notification
@@ -61,7 +61,8 @@ jobs:
         if: ${{ env.SKIP_DEPLOY == 'false' }}
       - name: Bump version and push tag
         if: ${{ env.SKIP_DEPLOY == 'false' }}
-        uses: anothrNick/github-tag-action@f278d49d30cdd8775cc3e7dd00b5ee11686ee297
+        uses: anothrNick/github-tag-action@1.71.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+          INITIAL_VERSION: 0.0.1
