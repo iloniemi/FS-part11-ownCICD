@@ -1,4 +1,4 @@
-const PersonForm = ({onSubmit, fields}) => (
+const PersonForm = ({ onSubmit, fields }) => (
   <form onSubmit={onSubmit}>
     {fields.map(field => (
       <Field key={field.text} text={field.text} onChange={field.onChange} value={field.value} />
@@ -9,9 +9,9 @@ const PersonForm = ({onSubmit, fields}) => (
   </form>
 )
 
-const Field = ({text, onChange, value}) => (
+const Field = ({ text, onChange, value }) => (
   <div>
-        {text}: <input onChange={onChange} value={value} />
+    {text}: <input onChange={onChange} value={value} />
   </div>
 )
 

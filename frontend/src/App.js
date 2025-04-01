@@ -38,17 +38,15 @@ const App = () => {
         setPersons(data)
       })
   } ,[])
-  
+
   const handleSubmitNewPerson = (event) => {
     event.preventDefault()
-    const newPerson = { name: newName,
-                        number: newNumber}
+    const newPerson = { name: newName, number: newNumber }
 
     // Name already in the phonebook
     const personWithSameName = persons.find(person => person.name === newName)
     if (personWithSameName) {
-      const queryString = `${newName} is already added to the phonebook, replace the old number with a new one?` 
-    
+      const queryString = `${newName} is already added to the phonebook, replace the old number with a new one?`
       if (window.confirm(queryString)) {
         PersonService
           .replace(personWithSameName.id, newPerson)
@@ -64,7 +62,6 @@ const App = () => {
             if (error.request.status === 400) {
               setNotificationWithReset(error.response.data.error, true)
             }
-            
           })
       }
       return
@@ -81,7 +78,7 @@ const App = () => {
         setNotificationWithReset(error.response.data.error, true)
         return
       })
-    
+
     // Clear form
     setNewName('')
     setNewNumber('')
@@ -91,6 +88,7 @@ const App = () => {
     const personToRemove = persons.find(person => person.id === id)
     if (window.confirm(`Remove ${personToRemove.name}?`)) {
       PersonService.remove(id).then(response => {
+        console.log(response)
         setPersons(persons.filter(person => person.id !== id))
         setNotificationWithReset(`${personToRemove.name} removed`)
       })}
