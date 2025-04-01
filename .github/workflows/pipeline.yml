@@ -1,0 +1,63 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+env:
+  SKIP_DEPLOY: ${{ github.event_name != 'push' || contains(join(toJson(github.event.commits.*.message), ', '), '#skip') }}
+
+
+jobs:
+  simple_deployment_pipeline:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: 
+          node-version: '20'
+      - name: npm install
+        run: npm install
+      - name: lint
+        run: npm run lint
+      - name: build
+        run: npm run build:ui
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        if: ${{ env.SKIP_DEPLOY == 'false' }}
+      - run: flyctl deploy --remote-only
+        if: ${{ env.SKIP_DEPLOY == 'false' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: deployment success discord notification
+        if: ${{ success() && env.SKIP_DEPLOY == 'false' }}
+        uses: stegzilla/discord-notify@v2
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          title: New version of Pokedex deployed
+          message: |
+            **url:** https://full-stack-open-pokedex-frosty-pine-1702.fly.dev/
+      - name: deployment failure discord notification
+        if: ${{ failure() && env.SKIP_DEPLOY == 'false' }}
+        uses: stegzilla/discord-notify@v2
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          title: Build failed
+          message: |
+            **Commit URL:** ${{ github.event.head_commit.url }}
+            **by:** ${{ github.event.pusher.name }}
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+        if: ${{ env.SKIP_DEPLOY == 'false' }}
+      - name: Bump version and push tag
+        if: ${{ env.SKIP_DEPLOY == 'false' }}
+        uses: anothrNick/github-tag-action@f278d49d30cdd8775cc3e7dd00b5ee11686ee297
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch

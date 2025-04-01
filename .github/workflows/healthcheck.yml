@@ -1,0 +1,38 @@
+name: Scheduled health check
+
+on:
+  schedule:
+    - cron: '0 8 1 * *'
+
+jobs:
+  scheduled-health-check:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@v4
+        with:
+          # Check the following URLs one by one sequentially
+          url: https://puhelinluettelo-holy-wildflower-4543.fly.dev/version
+          # Follow redirects, or just report success on 3xx status codes
+          follow-redirect: false # Optional, defaults to "false"
+          # Fail this action after this many failed attempts
+          max-attempts: 3 # Optional, defaults to 1
+          # Delay between retries
+          retry-delay: 5s # Optional, only applicable to max-attempts > 1
+          # Retry all errors, including 404. This option might trigger curl upgrade.
+      - name: health check success discord notification
+        if: success()
+        uses: stegzilla/discord-notify@v2
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          title: Monthly health check passed
+          message: |
+            https://puhelinluettelo-holy-wildflower-4543.fly.dev
+      - name: health check failed discord notification
+        if: failure()
+        uses: stegzilla/discord-notify@v2
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          title: Monthly health check failed
+          message: |
+            https://puhelinluettelo-holy-wildflower-4543.fly.dev
