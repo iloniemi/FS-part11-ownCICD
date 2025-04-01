@@ -43,7 +43,7 @@ jobs:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           title: New version of Pokedex deployed
           message: |
-            **url:** https://full-stack-open-pokedex-frosty-pine-1702.fly.dev/
+            **url:** https://puhelinluettelo-holy-wildflower-4543.fly.dev
       - name: deployment failure discord notification
         if: ${{ failure() && env.SKIP_DEPLOY == 'false' }}
         uses: stegzilla/discord-notify@v2
