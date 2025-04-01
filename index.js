@@ -20,6 +20,9 @@ app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req_data'))
 
+app.get('/version', (req, res) => {
+  res.send('1') // change this string to ensure a new version deployed
+})
 
 // Request handling
 app.get('/info', (req, res, next) => {
